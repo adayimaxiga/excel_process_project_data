@@ -294,15 +294,17 @@ if __name__ == "__main__":
     for i in range(1,nrows2):
         # 获取原始行列
         ListTempDeleteTemp2 = ProcessExcelRow(table2.row_values(i))
+
         if (len(ListTempDeleteTemp2) > 2):
             namename2 = ListTempDeleteTemp2[2]
             bookbook2 = ListTempDeleteTemp2[3]
             countcount2 = ListTempDeleteTemp2[4]
-
+        if(len(ListTempDeleteTemp2)==5):
+            countcount2 =0
         person2.append(MessegeOfRobomasterPerson(namename2,"","",bookbook2,""))
         person2[i-1].countSet(countcount2)
     #print(person2[0].ReturnName())
-    #person2.sort()
+    person2.sort()
     #print(person2[0].ReturnName())
     #sheet4
     temp22=person2[0].ReturnName()
