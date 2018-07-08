@@ -178,6 +178,24 @@ if __name__ == "__main__":
     titletitle = ""
     bookbook = ""
     datedate = ""
+
+    grid = [['.', '.', '.', '.', '.', '.'],
+            ['.', 'O', 'O', '.', '.', '.'],
+            ['O', 'O', 'O', 'O', '.', '.'],
+            ['O', 'O', 'O', 'O', 'O', '.'],
+            ['.', 'O', 'O', 'O', 'O', 'O'],
+            ['O', 'O', 'O', 'O', 'O', '.'],
+            ['O', 'O', 'O', 'O', '.', '.'],
+            ['.', 'O', 'O', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.']]
+    for i in range(6):
+        for x in range(10):
+            if x == 9:
+                print('\r')
+            else:
+                print(grid[x][i],end=' ')
+
+    tempnum = int(input("傻敷敷告诉我一个数字"))
     for i in range(nrows):
         # 循环初始变量
         FlagNameUpdate = False
@@ -300,6 +318,8 @@ if __name__ == "__main__":
             bookbook2 = ListTempDeleteTemp2[3]
             countcount2 = ListTempDeleteTemp2[4]
         if(len(ListTempDeleteTemp2)==5):
+            countcount2 =0
+        if(countcount2<tempnum):
             countcount2 =0
         person2.append(MessegeOfRobomasterPerson(namename2,"","",bookbook2,""))
         person2[i-1].countSet(countcount2)
