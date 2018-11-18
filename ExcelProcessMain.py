@@ -4,6 +4,10 @@
 import xlrd
 import xlwt
 
+
+
+#str = raw_input("Enter your input: ");
+
 # 打开
 Workdata = xlrd.open_workbook('出版科学数据.xlsx')
 
