@@ -8,11 +8,11 @@ import re
 
 #file_name_daochu=input("导出文件名？")
 #file_name_beiyin=input("被引文件名？")
-
+file_name_output = '新闻界'
 #测试代码
-file_name_daochu = '现代传播导出2000-2017'
-file_name_beiyin = '现代传播被引2000-2017'
-file_name_output = '现代传播'
+file_name_daochu = file_name_output+'导出2000-2017'
+file_name_beiyin = file_name_output+'被引2000-2017'
+
 # 打开
 Workdata_daochu = xlrd.open_workbook(file_name_daochu+'.xlsx')
 Workdata_beiyin = xlrd.open_workbook(file_name_beiyin+'.xlsx')
@@ -20,7 +20,7 @@ Workdata_beiyin = xlrd.open_workbook(file_name_beiyin+'.xlsx')
 sheetname_daochu = Workdata_daochu.sheet_names()
 sheetname_beiyin = Workdata_beiyin.sheet_names()
 
-print(sheetname_beiyin)
+#print(sheetname_beiyin)
 
 #处理导出xlsx
 table_daochu  = Workdata_daochu.sheets()[0]
@@ -34,7 +34,7 @@ ncols_beiyin  = table_beiyin .ncols  # 列数
 
 #导出文件
 book = xlwt.Workbook(encoding='utf-8', style_compression=0)
-Sheet_daochu_raw = book.add_sheet('现代传播数据导出（筛选提取后）', cell_overwrite_ok=True)
+Sheet_daochu_raw = book.add_sheet(file_name_output+'数据导出（筛选提取后）', cell_overwrite_ok=True)
 Sheet_daochu_raw.write(0, 0, 'SrcDatabase')  # A1
 Sheet_daochu_raw.write(0, 1, 'Title')  # A1
 Sheet_daochu_raw.write(0, 2, 'Author')  # A1
@@ -50,7 +50,7 @@ Sheet_daochu_raw.write(0, 11, 'Period')  # A1
 Sheet_daochu_raw.write(0, 12, 'PageCount')  # A1
 Sheet_daochu_raw.write(0, 13, 'CLC')  # A1
 
-Sheet_beiyin_raw = book.add_sheet('现代传播数据被引（原始数据）', cell_overwrite_ok=True)
+Sheet_beiyin_raw = book.add_sheet(file_name_output+'数据被引（原始数据）', cell_overwrite_ok=True)
 Sheet_beiyin_raw.write(0, 0, 'Number')  # A1
 Sheet_beiyin_raw.write(0, 1, 'Title')  # A1
 Sheet_beiyin_raw.write(0, 2, 'Author')  # A1
@@ -60,7 +60,7 @@ Sheet_beiyin_raw.write(0, 5, 'DataBase')  # A1
 Sheet_beiyin_raw.write(0, 6, 'Reference')  # A1
 Sheet_beiyin_raw.write(0, 7, 'Download')  # A1
 
-Sheet_pipei = book.add_sheet('现代传播（匹配后）', cell_overwrite_ok=True)
+Sheet_pipei = book.add_sheet(file_name_output+'（匹配后）', cell_overwrite_ok=True)
 Sheet_pipei.write(0, 0, 'Number')  # A1
 Sheet_pipei.write(0, 1, 'Title')  # A1
 Sheet_pipei.write(0, 2, 'Author')  # A1
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     for i in range(len(data_daochu)):
         if(data_daochu[i].Author !=''):
             if (data_daochu[i].Keyword != ''):
-                if(data_daochu[i].Source.find('现代传播')!=-1):
+                if((data_daochu[i].Source.find(file_name_output)!=-1) or(data_daochu[i].Source.find('大学出版')!=-1)):
                     data_daochu_deleteuseless.append(data_daochu[i])
 
     print("导出数据筛选结果 before : " ,len(data_daochu) , "after : ", len(data_daochu_deleteuseless))
@@ -476,7 +476,7 @@ if __name__ == "__main__":
 
 
 
-book.save(r'傻敷敷看过来.xls')
+book.save(file_name_output+r'傻敷敷看过来.xls')
 
 
 
