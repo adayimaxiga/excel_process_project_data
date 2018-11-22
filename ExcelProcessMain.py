@@ -3,12 +3,21 @@
 
 import xlrd
 import xlwt
-import re
+import ngender
+#import re
 
+import sys
 
-#file_name_daochu=input("导出文件名？")
-#file_name_beiyin=input("被引文件名？")
-file_name_output = '新闻界'
+file_name_output=input("请从输入期刊名，出版编辑类（中国出版，中国科技期刊研究，出版发行研究，出版科学，现代出版，科技与出版，编辑之友）新闻与传媒类（国际新闻界，当代传播，新闻与传播研究，新闻大学，新闻界，新闻记者，现代传播）")
+
+all_chubanlei = {'中国出版','中国科技期刊研究','出版发行研究','出版科学','现代出版','科技与出版','编辑之友'}
+chubanlei = False
+
+for items in all_chubanlei:
+    if(items==file_name_output):
+        chubanlei = True
+
+#file_name_output = '新闻界'
 #测试代码
 file_name_daochu = file_name_output+'导出2000-2017'
 file_name_beiyin = file_name_output+'被引2000-2017'
@@ -81,6 +90,9 @@ Sheet_pipei.write(0, 16, '权值_作者')  # A1
 Sheet_pipei.write(0, 17, '权值_单位')  # A1
 Sheet_pipei.write(0, 18, '权值_基金')  # A1
 Sheet_pipei.write(0, 19, '第一责任人')  # A1
+Sheet_pipei.write(0, 20, '性别估计')  # A1
+Sheet_pipei.write(0, 21, '性别估计概率')  # A1
+
 #存储所有导出的类
 data_daochu=[]
 #存储宝宝要的类
@@ -297,7 +309,7 @@ def itemsprocess(itemsnow):
                 PubTime = itemsnow[i][maohao + 1:].lstrip(' ')
             elif (titlenow == 'FirstDuty'):
                 maohao = itemsnow[i].find(':', split)
-                FirstDuty = itemsnow[i][maohao + 1:].lstrip(' ')
+                FirstDuty = itemsnow[i][maohao + 1:].lstrip(' ').rstrip(';')
             elif (titlenow == 'Fund'):
                 maohao = itemsnow[i].find(':', split)
                 Fund = itemsnow[i][maohao + 1:].lstrip(' ')
@@ -329,10 +341,14 @@ def itemsprocess(itemsnow):
             PageCal =second_number -first_number   + 1
         else:
             PageCal = 1
-        #print("first number : " + str(first_number) + "second number : " + str(second_number))
-        #print(PageCount+ "  Change to : " +str(PageCal))
+
     return items_daochu(SrcDatabase, Title, Author, Organ, Source,Keyword,Summary,PubTime,FirstDuty,Fund,Year,Volume,Period,PageCount,CLC,PageCal)
 
+def check_contain_chinese(check_str):
+        for c in check_str:
+            if not ('\u4e00' <= c <= '\u9fa5'):
+                return False
+        return True
 
 if __name__ == "__main__":
     grid = [['.', '.', '.', '.', '.', '.'],
@@ -373,8 +389,12 @@ if __name__ == "__main__":
     for i in range(len(data_daochu)):
         if(data_daochu[i].Author !=''):
             if (data_daochu[i].Keyword != ''):
-                if((data_daochu[i].Source.find(file_name_output)!=-1) or(data_daochu[i].Source.find('大学出版')!=-1)):
-                    data_daochu_deleteuseless.append(data_daochu[i])
+                if(file_name_output == '现代出版'):
+                    if((data_daochu[i].Source.find(file_name_output)!=-1) or(data_daochu[i].Source.find('大学出版')!=-1)):
+                        data_daochu_deleteuseless.append(data_daochu[i])
+                else:
+                    if (data_daochu[i].Source.find(file_name_output) != -1):
+                        data_daochu_deleteuseless.append(data_daochu[i])
 
     print("导出数据筛选结果 before : " ,len(data_daochu) , "after : ", len(data_daochu_deleteuseless))
 
@@ -417,7 +437,8 @@ if __name__ == "__main__":
         PubTime = ListTempDeleteTemp[4]
         Database = ListTempDeleteTemp[5]
         Reference = ListTempDeleteTemp[6]
-        Download = ListTempDeleteTemp[7]
+        if(chubanlei==False):
+            Download = ListTempDeleteTemp[7]
         data_beiyin.append(items_beiyin(Number, Title, Author, Source, PubTime,Database,Reference,Download))
         #data_beiyin[i].print()
 
@@ -452,6 +473,19 @@ if __name__ == "__main__":
                     Sheet_pipei.write(count + 1, 13,data_daochu_deleteuseless[j].Fund)  # A1
                     Sheet_pipei.write(count + 1, 14,data_daochu_deleteuseless[j].PageCount)  # A1
                     Sheet_pipei.write(count + 1, 19,data_daochu_deleteuseless[j].FirstDuty)  # A1
+
+
+                    if(check_contain_chinese(data_daochu_deleteuseless[j].FirstDuty)):
+                        gender_this=ngender.guess(data_daochu_deleteuseless[j].FirstDuty)
+
+
+                        if(gender_this[0] == 'male'):
+                            Sheet_pipei.write(count + 1, 20, '男')
+                            Sheet_pipei.write(count + 1, 21,gender_this[1])
+                        elif(gender_this[0] == 'female'):
+                            Sheet_pipei.write(count + 1, 20, '女')
+                            Sheet_pipei.write(count + 1, 21, gender_this[1])
+
                     Author_temp = data_beiyin[i].Author.rstrip(';')
                     count_fen=0
                     if(Author_temp.find('课题组')!=-1):
